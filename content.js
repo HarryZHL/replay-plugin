@@ -1,5 +1,5 @@
 // 向页面注入JS
-function injectCustomJs(jsPath, script)
+function injectCustomJs(jsPath, script, scriptUrl)
 {
 	jsPath = jsPath || 'record.js';
 	var temp = document.createElement('script');
@@ -20,12 +20,20 @@ function injectCustomJs(jsPath, script)
         document.getElementsByTagName('html')[0].appendChild(temp2)
       }
     }
+    if (scriptUrl) {
+      var temp3 = document.createElement('script');
+      temp3.setAttribute('type', 'text/javascript');
+      temp3.src = scriptUrl;
+      temp3.onload = function(){
+        this.parentNode.removeChild(this);
+      }
+    }
   };
   document.head.appendChild(temp);
 }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // console.log(sender.tab ?"from a content script:" + sender.tab.url :"from the extension");
-  const { tab, recordUrl, scriptContent, isDefault } = request
+  const { tab, recordUrl, scriptUrl, scriptContent, isDefault } = request
   if(tab !== 'popup') return
   var _scriptContent = `
       window.record.record({
@@ -37,7 +45,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (isDefault) {
     injectCustomJs('', _scriptContent)
   } else {
-    injectCustomJs(recordUrl || '', scriptContent || _scriptContent)
+    injectCustomJs(recordUrl || '', scriptContent || _scriptContent, scriptUrl)
   }
 	sendResponse('received!!!');
 });

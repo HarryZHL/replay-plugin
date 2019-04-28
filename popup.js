@@ -12,7 +12,8 @@ function bindEvent() {
     const recordUrl = document.getElementById('recordUrl').value
     const scriptContent = document.getElementById('scriptContent').value
     const isDefault = document.getElementById('isDefault').checked
-    sendMessageToContentScript({tab:'popup', recordUrl, scriptContent, isDefault}, function(response) {
+    const scriptUrl = document.getElementById('scriptUrl').value
+    sendMessageToContentScript({tab:'popup', recordUrl, scriptUrl, scriptContent, isDefault}, function(response) {
       console.log('来自content的回复：'+response);
     });
   })
