@@ -1,7 +1,7 @@
 // 向页面注入JS
 function injectCustomJs(jsPath, script, scriptUrl){
-  const jsPathsLength = jsPath.split(';').length
-  jsPaths = jsPathsLength ? jsPath.split(';') : ['record.js'];
+  const jsPathsLength = jsPath ? jsPath.split(';').length : 0
+  jsPaths = jsPath && jsPathsLength ? jsPath.split(';') : ['record.js'];
   let i = 0
   jsPaths.forEach(path => {
     let temp = document.createElement('script');
@@ -36,8 +36,8 @@ function injectCustomJs(jsPath, script, scriptUrl){
         })
       }
     };
+    document.head.appendChild(temp);
   })
-  document.head.appendChild(temp);
 }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // console.log(sender.tab ?"from a content script:" + sender.tab.url :"from the extension");
