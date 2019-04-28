@@ -1,34 +1,42 @@
 // 向页面注入JS
-function injectCustomJs(jsPath, script, scriptUrl)
-{
-	jsPath = jsPath || 'record.js';
-	var temp = document.createElement('script');
-	temp.setAttribute('type', 'text/javascript');
-	temp.src = chrome.extension.getURL(jsPath);
-	temp.onload = function(){
-		// 放在页面不好看，执行完后移除掉
-    this.parentNode.removeChild(this);
-    if (script) {
-      const iseeRecord = document.getElementById('iseeRecord')
-      if (iseeRecord) {
-        iseeRecord.innerHTML = script
-      } else {
-        let temp2 = document.createElement('script');
-        temp2.setAttribute('type', 'text/javascript');
-        temp2.setAttribute('id', 'iseeRecord');
-        temp2.innerHTML = script
-        document.getElementsByTagName('html')[0].appendChild(temp2)
+function injectCustomJs(jsPath, script, scriptUrl){
+  const jsPathsLength = jsPath.split(';').length
+  jsPaths = jsPathsLength ? jsPath.split(';') : ['record.js'];
+  let i = 0
+  jsPaths.forEach(path => {
+    let temp = document.createElement('script');
+    temp.setAttribute('type', 'text/javascript');
+    temp.src = chrome.extension.getURL(path);
+    temp.onload = function(){
+      // 放在页面不好看，执行完后移除掉
+      this.parentNode.removeChild(this);
+      i++
+      if (i < jsPathsLength) return
+      if (script) {
+        const iseeRecord = document.getElementById('iseeRecord')
+        if (iseeRecord) {
+          iseeRecord.innerHTML = script
+        } else {
+          let temp2 = document.createElement('script');
+          temp2.setAttribute('type', 'text/javascript');
+          temp2.setAttribute('id', 'iseeRecord');
+          temp2.innerHTML = script
+          document.getElementsByTagName('html')[0].appendChild(temp2)
+        }
       }
-    }
-    if (scriptUrl) {
-      var temp3 = document.createElement('script');
-      temp3.setAttribute('type', 'text/javascript');
-      temp3.src = scriptUrl;
-      temp3.onload = function(){
-        this.parentNode.removeChild(this);
+      if (scriptUrl) {
+        const scriptUrls = scriptUrl.split(';')
+        scriptUrls.forEach(s => {
+          let temp3 = document.createElement('script');
+          temp3.setAttribute('type', 'text/javascript');
+          temp3.src = s;
+          temp3.onload = function(){
+            this.parentNode.removeChild(this);
+          }
+        })
       }
-    }
-  };
+    };
+  })
   document.head.appendChild(temp);
 }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
