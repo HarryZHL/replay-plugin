@@ -21,6 +21,9 @@ function injectCustomJs(jsPath, script, scriptUrl){
           temp2.setAttribute('type', 'text/javascript');
           temp2.setAttribute('id', 'iseeRecord');
           temp2.innerHTML = script
+          temp2.onload = function() {
+            this.parentNode.removeChild(this);
+          }
           document.getElementsByTagName('html')[0].appendChild(temp2)
         }
       }
@@ -33,6 +36,7 @@ function injectCustomJs(jsPath, script, scriptUrl){
           temp3.onload = function(){
             this.parentNode.removeChild(this);
           }
+          document.getElementsByTagName('html')[0].appendChild(temp3)
         })
       }
     };
