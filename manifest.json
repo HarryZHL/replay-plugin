@@ -1,0 +1,33 @@
+﻿{
+  "name": "千里眼",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "千里眼record插件",
+  "icons" : {
+    "16" : "icon.png",
+    "48" : "icon.png",
+    "128" : "icon.png"
+  },
+  "browser_action": {
+    "default_title": "千里眼Record",
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "record.js",
+        "content.js"
+      ],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "bookmarks",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": ["record.js"]
+}

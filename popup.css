@@ -1,0 +1,29 @@
+﻿body {
+	width: 320px;
+}
+.popup-btn{
+  margin: 0 auto;
+  border-radius: 4px;
+  color: #fff;
+  border: 0 none;
+  padding: 0 20px;
+  height: 32px;
+  line-height: 32px;
+  background-color: #2E67DF;
+}
+.config-wrap label{
+  display: block;
+  height: 28px;
+  line-height: 28px;
+}
+.config-wrap input[type=text]{
+  box-sizing: border-box;
+  width: 100%;
+  line-height: 28px;
+  border: 1px solid #ccc;
+}
+.config-wrap textarea{
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #ccc;
+}
