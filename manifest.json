@@ -27,6 +27,7 @@
   "permissions": [
     "tabs",
     "bookmarks",
+    "storage",
     "<all_urls>"
   ],
   "web_accessible_resources": ["record.js"]

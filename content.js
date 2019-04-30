@@ -44,20 +44,44 @@ function injectCustomJs(jsPath, script, scriptUrl){
   })
 }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // console.log(sender.tab ?"from a content script:" + sender.tab.url :"from the extension");
-  const { tab, recordUrl, scriptUrl, scriptContent, isDefault } = request
+  const { tab, msg } = request
   if(tab !== 'popup') return
-  var _scriptContent = `
-      window.record.record({
-        emit(event) {
-          // 将 event 存入 events 数组中
-          console.log('-------event--------', event)
-        },
-      })`
-  if (isDefault) {
-    injectCustomJs('', _scriptContent)
-  } else {
-    injectCustomJs(recordUrl || '', scriptContent || _scriptContent, scriptUrl)
+  if(msg === 'confirmClick') {
+    execute()
   }
 	sendResponse('received!!!');
 });
+
+function execute () {
+  let [recordUrl, postUrl, scriptParams, scriptType1, scriptType2, scriptUrl, isAutoInject] = ['' ,'http://dev.mytest.com/api/saveEvents', `{
+    "event": $event, 
+    "file": "test.json"
+  }`, true, false, '', false]
+  chrome.storage.local.get(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptUrl', 'isAutoInject'], function (obj) {
+    recordUrl = obj['recordUrl'] || ''
+    postUrl = obj['postUrl'] || ''
+    scriptParams = (obj['scriptParams'] || `{
+      "event": $event, 
+      "file": "test.json"
+    }`).replace('$event', 'event')
+    scriptType1 = !!obj['scriptType1']
+    scriptType2 = !!obj['scriptType2']
+    scriptUrl = obj['scriptUrl'] || ''
+    isAutoInject = !!obj['isAutoInject']
+    const script = `
+      window.record.record({
+        emit(event) {
+          const obj = ${scriptParams}
+          const xmlhttp = new XMLHttpRequest();
+          xmlhttp.open("POST","${postUrl}",true);
+          xmlhttp.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+          xmlhttp.timeout = 5000;
+          xmlhttp.send(JSON.stringify(obj));
+        },
+      })`
+    if (isAutoInject) {
+      injectCustomJs(recordUrl, scriptType1 ? script : null, scriptType2 ? scriptUrl : null)
+    }
+  })
+}
+execute()
