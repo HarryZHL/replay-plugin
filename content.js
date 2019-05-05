@@ -53,11 +53,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function execute () {
-  let [recordUrl, postUrl, scriptParams, scriptType1, scriptType2, scriptUrl, isAutoInject] = ['' ,'http://dev.mytest.com/api/saveEvents', `{
+  let [recordUrl, postUrl, scriptParams, scriptType1, scriptType2, scriptType3, scriptUrl, scriptText, isAutoInject] = ['' ,'http://dev.mytest.com/api/saveEvents', `{
     "event": $event, 
     "file": "test.json"
-  }`, true, false, '', false]
-  chrome.storage.local.get(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptUrl', 'isAutoInject'], function (obj) {
+  }`, true, false, false, '', '', false]
+  chrome.storage.local.get(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject'], function (obj) {
     recordUrl = obj['recordUrl'] || ''
     postUrl = obj['postUrl'] || ''
     scriptParams = (obj['scriptParams'] || `{
@@ -66,7 +66,9 @@ function execute () {
     }`).replace('$event', 'event')
     scriptType1 = !!obj['scriptType1']
     scriptType2 = !!obj['scriptType2']
+    scriptType3 = !!obj['scriptType3']
     scriptUrl = obj['scriptUrl'] || ''
+    scriptText = obj['scriptText'] || ''
     isAutoInject = !!obj['isAutoInject']
     const script = `
       window.record.record({
@@ -80,7 +82,7 @@ function execute () {
         },
       })`
     if (isAutoInject) {
-      injectCustomJs(recordUrl, scriptType1 ? script : null, scriptType2 ? scriptUrl : null)
+      injectCustomJs(recordUrl, scriptType1 ? script : scriptType3 ? scriptText : null, scriptType2 ? scriptUrl : null)
     }
   })
 }

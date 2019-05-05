@@ -14,12 +14,11 @@ function bindEvent() {
       chrome.storage.local.set({isFirst: true}, function () {
         console.log('初始化成功')
       })
-      return
     } else {
-      getLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptUrl', 'isAutoInject'])
+      getLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject'])
     }
   })
-  setLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptUrl', 'isAutoInject'])
+  setLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject'])
   document.getElementById('confirm').addEventListener('click', () => {
     sendMessageToContentScript({tab:'popup', msg: 'confirmClick'}, function(response) {
       console.log('来自content的回复：'+response);
@@ -38,9 +37,12 @@ function resetAll () {
     "file": "test.json"
   }`
   document.getElementById('scriptType1').checked = true
+  document.getElementById('scriptType2').checked = false
+  document.getElementById('scriptType3').checked = false
   document.getElementById('scriptUrl').value = ''
+  document.getElementById('scriptText').value = ''
   document.getElementById('isAutoInject').checked = false
-  chrome.storage.local.set({
+  const obj = {
     recordUrl: '',
     postUrl: 'http://dev.mytest.com/api/saveEvents',
     scriptParams: `{
@@ -49,10 +51,13 @@ function resetAll () {
     }`,
     scriptType1: true,
     scriptType2: false,
+    scriptType3: false,
     scriptUrl: '',
+    scriptText: '',
     isAutoInject: false
-  }, function() {
-    console.log('保存成功')
+  }
+  chrome.storage.local.set(obj, function() {
+    console.log('保存成功', obj)
   })
 }
 
@@ -63,19 +68,23 @@ function setLocal(targetIds) {
   targetIds.forEach(id => {
     const target = document.getElementById(id)
     if(target.type === 'checkbox' || target.type === 'radio') {
-      target.addEventListener('change', function () {
+      target.addEventListener('change', function (e) {
         const obj = {}
-        obj[id] = this.checked
+        document.getElementsByName(e.target.name).forEach(elem => {
+          obj[elem.id] = false
+        })
+        obj[e.target.id] = true
         chrome.storage.local.set(obj, function() {
-          console.log('保存成功')
+          console.log('保存成功', obj)
         })
       })
     } else {
-      target.addEventListener('change', function () {
+      target.addEventListener('input', function () {
         const obj = {}
         obj[id] = this.value
+        console.log(this.value)
         chrome.storage.local.set(obj, function() {
-          console.log('保存成功')
+          console.log('保存成功', obj)
         })
       })
     }
