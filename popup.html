@@ -6,35 +6,44 @@
 	</head>
 <body>
 <div id="content">
-  <p class="config-wrap">
-    <label for="">record URL:（多个URL使用";"分隔）</label>
-    <input id="recordUrl" type="text" />
-  </p>
-  <p class="config-wrap">
-    <label for=""><input type="radio" name="scriptType" id="scriptType1" />POST接口地址：</label>
-    <input id="postUrl" type="text"/>
-  </p>
-  <p class="config-wrap">
-      <label for="">接口参数（JSON格式，$event表示record.js输出参数）：</label>
-      <textarea id="scriptParams" cols="30" rows="6"></textarea>
+  <div class="tab">
+    <span class="cur">录制</span>
+    <span>回放</span>
+  </div>
+  <div class="block">
+    <p class="config-wrap">
+      <label for="">record URL:（多个URL使用";"分隔）</label>
+      <input id="recordUrl" type="text" />
     </p>
-  <p class="config-wrap">
-    <label for=""><input type="radio" name="scriptType" id="scriptType2" />执行脚本URL:（多个URL使用";"分隔）</label>
-    <input id="scriptUrl" type="text" />
-  </p>
-  <p class="config-wrap">
-    <label for=""><input type="radio" name="scriptType" id="scriptType3" />直接录入执行脚本:</label>
-    <textarea id="scriptText" cols="30" rows="6"></textarea>
-  </p>
-  <!-- <p class="config-wrap">
-    <input type="checkbox" id="isDefault">使用默认配置
-  </p> -->
-  <p class="config-wrap">
-    <input type="checkbox" id="isAutoInject">自动注入脚本
-  </p>
-  <div>
-    <button class="popup-btn" id="reset">恢复默认</button>
-    <button class="popup-btn" id="confirm">注入脚本</button>
+    <p class="config-wrap">
+      <label for=""><input type="radio" name="scriptType" id="scriptType1" />POST接口地址：</label>
+      <input id="postUrl" type="text"/>
+    </p>
+    <p class="config-wrap">
+        <label for="">接口参数（JSON格式，$event表示record.js输出参数）：</label>
+        <textarea id="scriptParams" cols="30" rows="6"></textarea>
+      </p>
+    <p class="config-wrap">
+      <label for=""><input type="radio" name="scriptType" id="scriptType2" />执行脚本URL:（多个URL使用";"分隔）</label>
+      <input id="scriptUrl" type="text" />
+    </p>
+    <p class="config-wrap">
+      <label for=""><input type="radio" name="scriptType" id="scriptType3" />直接录入执行脚本:</label>
+      <textarea id="scriptText" cols="30" rows="6"></textarea>
+    </p>
+    <!-- <p class="config-wrap">
+      <input type="checkbox" id="isDefault">使用默认配置
+    </p> -->
+    <p class="config-wrap">
+      <input type="checkbox" id="isAutoInject" name="isAutoInject">自动注入脚本
+    </p>
+    <div>
+      <button class="popup-btn" id="reset">恢复默认</button>
+      <button class="popup-btn" id="confirm">注入脚本</button>
+    </div>
+  </div>
+  <div class="block" style="display:none">
+    <button class="popup-btn" id="replay">回放</button>
   </div>
 </div>
 </body>

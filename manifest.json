@@ -17,7 +17,6 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "record.js",
         "content.js"
       ],
       "all_frames": true,
@@ -30,5 +29,5 @@
     "storage",
     "<all_urls>"
   ],
-  "web_accessible_resources": ["record.js"]
+  "web_accessible_resources": ["record.js", "replay.js"]
 }

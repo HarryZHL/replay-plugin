@@ -1,10 +1,10 @@
 // 向页面注入JS
-function injectCustomJs(jsPath, script, scriptUrl){
+function injectCustomJs(jsPath, script, scriptUrl, doc = document){
   const jsPathsLength = jsPath ? jsPath.split(';').length : 0
   jsPaths = jsPath && jsPathsLength ? jsPath.split(';') : ['record.js'];
   let i = 0
   jsPaths.forEach(path => {
-    let temp = document.createElement('script');
+    let temp = doc.createElement('script');
     temp.setAttribute('type', 'text/javascript');
     temp.src = chrome.extension.getURL(path);
     temp.onload = function(){
@@ -13,46 +13,52 @@ function injectCustomJs(jsPath, script, scriptUrl){
       i++
       if (i < jsPathsLength) return
       if (script) {
-        const iseeRecord = document.getElementById('iseeRecord')
+        const iseeRecord = doc.getElementById('iseeRecord')
         if (iseeRecord) {
           iseeRecord.innerHTML = script
         } else {
-          let temp2 = document.createElement('script');
+          let temp2 = doc.createElement('script');
           temp2.setAttribute('type', 'text/javascript');
           temp2.setAttribute('id', 'iseeRecord');
           temp2.innerHTML = script
           temp2.onload = function() {
             this.parentNode.removeChild(this);
           }
-          document.getElementsByTagName('html')[0].appendChild(temp2)
+          doc.getElementsByTagName('html')[0].appendChild(temp2)
         }
       }
       if (scriptUrl) {
         const scriptUrls = scriptUrl.split(';')
         scriptUrls.forEach(s => {
-          let temp3 = document.createElement('script');
+          let temp3 = doc.createElement('script');
           temp3.setAttribute('type', 'text/javascript');
           temp3.src = s;
           temp3.onload = function(){
             this.parentNode.removeChild(this);
           }
-          document.getElementsByTagName('html')[0].appendChild(temp3)
+          doc.getElementsByTagName('html')[0].appendChild(temp3)
         })
       }
     };
-    document.head.appendChild(temp);
+    doc.head.appendChild(temp);
   })
 }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { tab, msg } = request
   if(tab !== 'popup') return
   if(msg === 'confirmClick') {
-    execute()
+    execute(function (isAutoInject, recordUrl, cbScript, cbScriptUrl) {
+      injectCustomJs(recordUrl, cbScript, cbScriptUrl)
+    })
   }
+  // if(msg === 'replayClick') {
+  //   const newWindow = window.open('about:blank')
+  //   injectCustomJs('replay.js', 'console.log("231231")', null, newWindow.document)
+  // }
 	sendResponse('received!!!');
 });
 
-function execute () {
+function execute (cb) {
   let [recordUrl, postUrl, scriptParams, scriptType1, scriptType2, scriptType3, scriptUrl, scriptText, isAutoInject] = ['' ,'http://dev.mytest.com/api/saveEvents', `{
     "event": $event, 
     "file": "test.json"
@@ -81,9 +87,13 @@ function execute () {
           xmlhttp.send(JSON.stringify(obj));
         },
       })`
-    if (isAutoInject) {
-      injectCustomJs(recordUrl, scriptType1 ? script : scriptType3 ? scriptText : null, scriptType2 ? scriptUrl : null)
-    }
+    const cbScript = scriptType1 ? script : scriptType3 ? scriptText : null
+    const cbScriptUrl =  scriptType2 ? scriptUrl : null
+    cb && cb(isAutoInject, recordUrl, cbScript, cbScriptUrl)
   })
 }
-execute()
+execute(function (isAutoInject, recordUrl, cbScript, cbScriptUrl) {
+  if (isAutoInject) {
+    injectCustomJs(recordUrl, cbScript, cbScriptUrl)
+  }
+})

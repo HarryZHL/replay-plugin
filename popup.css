@@ -1,5 +1,5 @@
 ﻿body {
-	width: 320px;
+  width: 320px;
 }
 .popup-btn{
   margin: 0 auto;
@@ -29,4 +29,29 @@
   box-sizing: border-box;
   width: 100%;
   border: 1px solid #ccc;
+}
+.tab {
+  width: 100%;
+  overflow: hidden;
+}
+.tab span {
+  float: left;
+  width: 50%;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: #91b4f2;
+  cursor: pointer;
+  height: 32px;
+  line-height: 32px;
+  color: #fff;
+  font-size: 14px;
+  border: 1px solid #2E67DF;
+  border-bottom: 0 none;
+}
+.tab span:nth-of-type(1) {
+  border-right: 0 none;
+}
+.tab span.cur {
+  background-color: #fff;
+  color: #333;
 }

@@ -27,6 +27,32 @@ function bindEvent() {
   document.getElementById('reset').addEventListener('click', () => {
     resetAll()
   })
+  const tabs = [...document.getElementsByClassName('tab')[0].getElementsByTagName('span')]
+  const blocks = [...document.getElementsByClassName('block')]
+  tabs.forEach((tab, index) => {
+    tab.setAttribute('index', index)
+    tab.addEventListener('click', e => {
+      console.log(e)
+      if(e.target.className === 'cur') {
+        return
+      } else {
+        tabs.forEach(t => {
+          t.className = ''
+        })
+        e.target.className = 'cur'
+        const tabIndex = e.target.getAttribute('index')
+        blocks.forEach(block => {
+          block.style.display = 'none'
+        })
+        blocks[tabIndex].style.display = 'block'
+      }
+    })
+  })
+  document.getElementById('replay').addEventListener('click', () => {
+    sendMessageToContentScript({tab:'popup', msg: 'replayClick'}, function(response) {
+      console.log('来自content的回复：'+response);
+    });
+  })
 }
 
 function resetAll () {
@@ -73,7 +99,7 @@ function setLocal(targetIds) {
         document.getElementsByName(e.target.name).forEach(elem => {
           obj[elem.id] = false
         })
-        obj[e.target.id] = true
+        obj[e.target.id] = this.checked
         chrome.storage.local.set(obj, function() {
           console.log('保存成功', obj)
         })
