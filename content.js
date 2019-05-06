@@ -65,7 +65,7 @@ function executeReplay (cb) {
   chrome.storage.local.get(['replayUrl', 'getUrl', 'replayScriptText'], function (obj) {
     replayUrl = obj['replayUrl'] || ''
     getUrl = obj['getUrl'] || ''
-    replayScriptText = obj['replayScriptText'] || `
+    replayScriptText = (obj['replayScriptText'] || `
       document.body.innerHTML = '';
       const xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function(){
@@ -85,7 +85,7 @@ function executeReplay (cb) {
       }
       xmlhttp.open('get', '${getUrl}');
 	    xmlhttp.send(null);
-    `
+    `).replace('$getUrl', getUrl)
     cb && cb(replayUrl, replayScriptText)
   })
 }

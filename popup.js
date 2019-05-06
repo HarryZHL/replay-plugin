@@ -78,7 +78,7 @@ function resetAll2 () {
       }
     }
   }
-  xmlhttp.open('get', '${getUrl}');
+  xmlhttp.open('get', '$getUrl');
   xmlhttp.send(null);`
   document.getElementById('replayUrl').value = ''
   document.getElementById('getUrl').value = 'http://dev.mytest.com/api/getEvents?file=test.json'
