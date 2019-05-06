@@ -21,9 +21,9 @@ function injectCustomJs(jsPath, script, scriptUrl, doc = document){
           temp2.setAttribute('type', 'text/javascript');
           temp2.setAttribute('id', 'iseeRecord');
           temp2.innerHTML = script
-          temp2.onload = function() {
-            this.parentNode.removeChild(this);
-          }
+          // temp2.onload = function() {
+          //   this.parentNode.removeChild(this);
+          // }
           doc.getElementsByTagName('html')[0].appendChild(temp2)
         }
       }
@@ -51,12 +51,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       injectCustomJs(recordUrl, cbScript, cbScriptUrl)
     })
   }
-  // if(msg === 'replayClick') {
-  //   const newWindow = window.open('about:blank')
-  //   injectCustomJs('replay.js', 'console.log("231231")', null, newWindow.document)
-  // }
+  if(msg === 'replayClick') {
+    const newWindow = window.open('about:blank')
+    executeReplay(function (replayUrl, replayScriptText) {
+      injectCustomJs(replayUrl || 'replay.js', replayScriptText, null, newWindow.document)
+    })
+  }
 	sendResponse('received!!!');
 });
+
+function executeReplay (cb) {
+  let [replayUrl, getUrl, replayScriptText] = ['' ,'http://dev.mytest.com/api/getEvents?file=test.json', '']
+  chrome.storage.local.get(['replayUrl', 'getUrl', 'replayScriptText'], function (obj) {
+    replayUrl = obj['replayUrl'] || ''
+    getUrl = obj['getUrl'] || ''
+    replayScriptText = obj['replayScriptText'] || `
+      document.body.innerHTML = '';
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function(){
+        let events = []
+        if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+          const responseText = xmlhttp.responseText;
+          let response = {}
+          if (responseText) {
+            response = JSON.parse(responseText)
+          }
+          if(response.success) {
+            events = response.data.data;
+            const player = new window.replay(events);
+            player.play();
+          }
+        }
+      }
+      xmlhttp.open('get', '${getUrl}');
+	    xmlhttp.send(null);
+    `
+    cb && cb(replayUrl, replayScriptText)
+  })
+}
 
 function execute (cb) {
   let [recordUrl, postUrl, scriptParams, scriptType1, scriptType2, scriptType3, scriptUrl, scriptText, isAutoInject] = ['' ,'http://dev.mytest.com/api/saveEvents', `{

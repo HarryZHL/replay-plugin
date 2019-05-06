@@ -12,7 +12,7 @@
   </div>
   <div class="block">
     <p class="config-wrap">
-      <label for="">record URL:（多个URL使用";"分隔）</label>
+      <label for="">record.js URL:（可不填，多个URL使用";"分隔）</label>
       <input id="recordUrl" type="text" />
     </p>
     <p class="config-wrap">
@@ -43,6 +43,19 @@
     </div>
   </div>
   <div class="block" style="display:none">
+    <p class="config-wrap">
+      <label for="">replay.js URL:（可不填，多个URL使用";"分隔）</label>
+      <input id="replayUrl" type="text" />
+    </p>
+    <p class="config-wrap">
+      <label for="">GET接口地址：</label>
+      <input id="getUrl" type="text"/>
+    </p>
+    <p class="config-wrap">
+      <label for="">执行脚本:</label>
+      <textarea id="replayScriptText" cols="30" rows="6"></textarea>
+    </p>
+    <button class="popup-btn" id="reset2">恢复默认</button>
     <button class="popup-btn" id="replay">回放</button>
   </div>
 </div>

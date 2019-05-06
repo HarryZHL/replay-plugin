@@ -11,14 +11,15 @@ function bindEvent() {
   chrome.storage.local.get('isFirst', function (obj) {
     if (!obj['isFirst']) {
       resetAll()
+      resetAll2()
       chrome.storage.local.set({isFirst: true}, function () {
         console.log('初始化成功')
       })
     } else {
-      getLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject'])
+      getLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject', 'replayUrl', 'getUrl', 'replayScriptText'])
     }
   })
-  setLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject'])
+  setLocal(['recordUrl', 'postUrl', 'scriptParams', 'scriptType1', 'scriptType2', 'scriptType3', 'scriptUrl', 'scriptText', 'isAutoInject', 'replayUrl', 'getUrl', 'replayScriptText'])
   document.getElementById('confirm').addEventListener('click', () => {
     sendMessageToContentScript({tab:'popup', msg: 'confirmClick'}, function(response) {
       console.log('来自content的回复：'+response);
@@ -48,10 +49,47 @@ function bindEvent() {
       }
     })
   })
+  document.getElementById('reset2').addEventListener('click', () => {
+    resetAll2()
+  })
   document.getElementById('replay').addEventListener('click', () => {
     sendMessageToContentScript({tab:'popup', msg: 'replayClick'}, function(response) {
       console.log('来自content的回复：'+response);
     });
+  })
+}
+
+function resetAll2 () {
+  const replayScriptText = `
+  document.body.innerHTML = '';
+  const xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function(){
+    let events = []
+    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+      const responseText = xmlhttp.responseText;
+      let response = {}
+      if (responseText) {
+        response = JSON.parse(responseText)
+      }
+      if(response.success) {
+        events = response.data.data;
+        const player = new window.replay(events);
+        player.play();
+      }
+    }
+  }
+  xmlhttp.open('get', '${getUrl}');
+  xmlhttp.send(null);`
+  document.getElementById('replayUrl').value = ''
+  document.getElementById('getUrl').value = 'http://dev.mytest.com/api/getEvents?file=test.json'
+  document.getElementById('replayScriptText').value = replayScriptText
+  const obj = {
+    replayUrl: '',
+    getUrl: 'http://dev.mytest.com/api/getEvents?file=test.json',
+    replayScriptText
+  }
+  chrome.storage.local.set(obj, function() {
+    console.log('保存成功', obj)
   })
 }
 
