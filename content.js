@@ -52,7 +52,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
   }
   if(msg === 'replayClick') {
-    const newWindow = window.open('about:blank')
+    let newWindow
+    if(window.location.href.indexOf('replay.html') > -1) {
+      newWindow = window
+    } else {
+      newWindow = window.open('about:blank')
+    }
     executeReplay(function (replayUrl, replayScriptText) {
       injectCustomJs(replayUrl || 'replay.js', replayScriptText, null, newWindow.document)
     })
